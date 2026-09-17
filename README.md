@@ -1,1 +1,113 @@
-# Christian Aust - SCM Professional
+# christianaust.eu — persönliche Ideenschmiede
+
+Die persönliche Startseite von Christian Aust: Ideen, kleine Werkzeuge und
+digitale Lösungen aus der Praxis.
+
+**Produktion:** <https://christianaust.eu/>
+
+---
+
+## Abgrenzung — welche Domain wofür steht
+
+| Domain | Rolle | Betrieb |
+|---|---|---|
+| `christianaust.eu` | **Diese Seite.** Persönliche Ideenschmiede, Projekte, Experimente. Öffentlich. | GitHub Pages, dieses Repo |
+| `www.engpasswerk.de` | Professioneller Business-/Beratungsauftritt. | Cloudflare Pages, Repo `engpasswerk-consulting-website` |
+| `app.engpasswerk.de` | EngpassWerk OS (Anwendung). | eigenes Repo |
+| `cockpit.christianaust.eu` | Privates Cockpit hinter Cloudflare Access. | Cloudflare Pages, Repo `dashboard` (Christian Cockpit) |
+
+Diese Seite ist **keine zweite EngpassWerk-Vertriebsseite**. Auf EngpassWerk
+wird genau einmal und dezent verwiesen; alles Geschäftliche gehört dorthin.
+
+---
+
+## Technik
+
+Eine einzige statische Datei, kein Build, kein Framework, keine externen
+Schriften, keine Skripte, keine Tracker.
+
+```
+index.html              Die gesamte Landingpage: Markup + Styles inline
+assets/logo/            CA-Signet und Favicons (aus dem Cockpit-Branding übernommen)
+  ca-signet-dark.png    C orange, A hell, transparent — steht direkt auf dunklem Grund
+  ca-favicon-32.png     Browser-Tab
+  ca-favicon-180.png    Apple-Touch-Icon
+  ca-favicon-512.png    große Kachel, zugleich OG-Bild
+tests/landing.test.mjs  Prüft die Seite gegen die Vorgaben dieses Auftrags
+docs/ARCHITEKTUR.md     Domain- und Hostinglandschaft, geplante Ausbaustufen
+CNAME                   christianaust.eu — von GitHub Pages ausgewertet
+```
+
+Da alles inline liegt, lädt die Seite in einem einzigen Request (plus Signet
+und Favicon). Ein Doppelklick auf `index.html` funktioniert genauso wie die
+ausgelieferte Fassung.
+
+### Lokal ansehen
+
+```bash
+python3 -m http.server 8877
+# http://127.0.0.1:8877/
+```
+
+### Tests
+
+```bash
+node --test tests/*.test.mjs
+```
+
+Die Tests lesen `index.html` als Text und prüfen die Zusagen, die diese Seite
+machen muss: keine CV-Rückstände, keine externen Abhängigkeiten, Cockpit nur
+dezent und `nofollow`, EngpassWerk-Verweis auf die tatsächlich erreichbare
+`www`-Adresse, Favicons und OG-Bild vorhanden, Safe-Area für iPhone gesetzt.
+
+---
+
+## Design
+
+Dunkel, ruhig, wenige Elemente, großzügige Abstände.
+
+- **Farben** aus dem CA-Branding: Navy `#0D1B2A` (hier als `#0B1622` eine Spur
+  tiefer als Grundfläche), Orange `#E87722` als einziger Akzent.
+- **Typografie** ausschließlich Systemschriften. Keine Google Fonts — kein
+  externer Request, keine IP-Weitergabe, kein Layoutsprung beim Laden.
+- **Kontrast** nachgerechnet: die kleinste verwendete Textfarbe `#93A6BA`
+  erreicht 6,7 : 1 auf dem Grund, Orange 5,5 : 1. Beides über 4,5 : 1.
+- **Bewegung** auf ein Minimum beschränkt: weiche Übergänge bei Hover, sonst
+  nichts. `prefers-reduced-motion` schaltet sie vollständig ab.
+- **Erster Bildschirm** (`100svh`) beantwortet drei Fragen: wer, welche Themen,
+  was ist diese Seite.
+
+Die Seite trägt bewusst **keine Navigation**, kein Foto, keine Berufshistorie
+und keinen Lebenslauf.
+
+---
+
+## Deployment
+
+GitHub Pages, Quelle `main` / Repo-Wurzel (`build_type: legacy`, kein Workflow).
+Ein Push nach `main` ist das Deployment; nach ein bis zwei Minuten ist die
+neue Fassung online. HTTPS ist erzwungen, das Zertifikat stellt GitHub aus.
+
+> **`_headers` gibt es hier nicht.** Das ist eine Cloudflare-Pages-Datei;
+> GitHub Pages wertet sie nicht aus. Sicherheits-Header lassen sich auf
+> dieser Domain derzeit nicht setzen — siehe `docs/ARCHITEKTUR.md`.
+
+### Was auf dieser Domain sonst noch hängt
+
+Unter der Apex-Domain liegen weitere GitHub-Pages-Projekte aus **eigenen
+Repositories**. Sie werden von diesem Repo weder ausgeliefert noch berührt:
+
+- `christianaust.eu/tt-umfrage/` → Repo `tt-umfrage`
+- `christianaust.eu/Tisch7/` → Repo `Tisch7` (leitet auf `tisch7.christianaust.eu`)
+
+Ebenso unberührt bleiben die Subdomains `cockpit.`, `spielplanapp.`,
+`kitchen.` und `n8n.` — sie laufen über Cloudflare, nicht über GitHub Pages.
+
+---
+
+## Herkunft
+
+Bis September 2026 lag hier eine Profil- und Lebenslaufseite: Foto, Track
+Record, vollständiger Werdegang und ein CV-PDF zum Download. Diese Funktion
+wird nicht mehr benötigt. Der alte Stand bleibt in der Git-Historie
+(`e6a3e59` und früher) und ließe sich von dort jederzeit zurückholen.
