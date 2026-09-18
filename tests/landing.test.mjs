@@ -39,15 +39,30 @@ test('der erste Bildschirm beantwortet wer, welche Themen, was ist das', () => {
   assert.match(hero, /Engpassmanagement/)
   assert.match(hero, /Digitale Prozesse/)
   assert.match(hero, /Automatisierung/)
-  assert.match(hero, /Hier sammle ich/)
+  assert.match(hero, /Hier entstehen Ideen aus der Praxis/)
   assert.match(html, /\.hero\s*\{[^}]*min-height:\s*100svh/)
+})
+
+test('der Hero kommt ohne zusätzliche Navigation aus', () => {
+  // Der Scrollhinweis „Bereiche ↓" ist entfernt: die Seite ist kurz genug,
+  // dass Scrollen keine Anleitung braucht. Eine Navigation gibt es weiterhin nicht.
+  assert.ok(!html.includes('to-areas'))
+  assert.ok(!/<nav/.test(html))
+
+  const hero = html.slice(html.indexOf('<section class="hero'), html.indexOf('id="bereiche"'))
+  assert.equal((hero.match(/<a /g) || []).length, 0, 'Im Hero steht kein Link')
 })
 
 test('die vier inhaltlichen Bereiche stehen auf der Seite', () => {
   assert.match(html, /<h2>SCM &amp; Operations<\/h2>/)
   assert.match(html, /<h2>Digital &amp; Automation<\/h2>/)
   assert.match(html, /<h2>Lab · Ideenschmiede<\/h2>/)
-  assert.match(html, /In Vorbereitung/)          // Lab ist heute nur Teaser
+
+  // Das Lab trägt bewusst keinen Teaser-Chip mehr — es soll nicht wie eine
+  // unfertige Baustelle wirken, sondern wie ein Bereich, der einfach noch
+  // gefüllt wird.
+  assert.ok(!html.includes('In Vorbereitung'))
+  assert.ok(!html.includes('class="chip"'))
   assert.match(html, /EngpassWerk Consulting/)
 })
 
