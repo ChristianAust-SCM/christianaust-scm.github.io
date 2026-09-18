@@ -114,7 +114,12 @@
   }
 
   .name {
-    font-size: clamp(2.3rem, 7.2vw, 4.4rem);
+    /*
+     * Obergrenze von 4,4rem auf 3,8rem (−14 %): der Name war auf großen
+     * Displays zu dominant. Die Untergrenze bleibt — auf dem iPhone greift
+     * ohnehin sie, die mobile Größe ändert sich dadurch nicht.
+     */
+    font-size: clamp(2.3rem, 7.2vw, 3.8rem);
     font-weight: 300;
     line-height: 1.05;
     letter-spacing: clamp(1px, .5vw, 6px);
@@ -153,24 +158,6 @@
     font-size: clamp(1rem, 2.6vw, 1.14rem);
     color: var(--ink-2);
   }
-
-  .to-areas {
-    margin-top: clamp(34px, 7vh, 64px);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    width: fit-content;
-    font-size: .88rem;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    text-decoration: none;
-    transition: color .25s ease;
-  }
-
-  .to-areas:hover { color: var(--ink); }
-  .to-areas svg { transition: transform .25s ease; }
-  .to-areas:hover svg { transform: translateY(3px); }
 
   /* -------------------------------------------------------------- Bereiche */
 
@@ -231,18 +218,6 @@
   .card p {
     font-size: .98rem;
     color: var(--ink-2);
-  }
-
-  .chip {
-    align-self: flex-start;
-    margin-top: 4px;
-    padding: 4px 11px;
-    font-size: .74rem;
-    letter-spacing: 1.1px;
-    text-transform: uppercase;
-    color: var(--ink-3);
-    border: 1px solid var(--line);
-    border-radius: 999px;
   }
 
   /* ------------------------------------------------------------ EngpassWerk */
@@ -328,11 +303,6 @@
 
   @media (prefers-reduced-motion: reduce) {
     * { transition: none !important; animation: none !important; }
-    html { scroll-behavior: auto; }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    html { scroll-behavior: smooth; }
   }
 </style>
 </head>
@@ -353,17 +323,10 @@
     <hr class="rule">
 
     <p class="intro">
-      Hier sammle ich, was neben dem Tagesgeschäft entsteht: Ideen aus der Praxis,
-      kleine Werkzeuge, digitale Lösungen. Ausprobieren, vereinfachen — und selbst
-      bauen, wenn die Standardlösung nicht passt.
+      Hier entstehen Ideen aus der Praxis, kleine Werkzeuge und digitale Lösungen.
+      Ausprobieren, vereinfachen und selbst bauen, wenn die Standardlösung nicht
+      passt.
     </p>
-
-    <a class="to-areas" href="#bereiche">
-      Bereiche
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 5v14M19 12l-7 7-7-7"></path>
-      </svg>
-    </a>
   </section>
 
   <section class="areas wrap" id="bereiche">
@@ -374,9 +337,9 @@
         <span class="num">01</span>
         <h2>SCM &amp; Operations</h2>
         <p>
-          Supply Chain, Logistik, Engpassmanagement. Beobachtungen und Vorgehensweisen
-          aus Situationen, in denen es schnell gehen musste und der Plan schon nicht
-          mehr galt.
+          Supply Chain, Logistik und Engpassmanagement. Ideen und Vorgehensweisen aus
+          Situationen, in denen es schnell gehen muss und Standardprozesse an ihre
+          Grenzen kommen.
         </p>
       </article>
 
@@ -384,9 +347,9 @@
         <span class="num">02</span>
         <h2>Digital &amp; Automation</h2>
         <p>
-          Kleine Werkzeuge und Automatisierungen für Arbeitsabläufe, die es wirklich
-          gibt. Meistens entstanden, weil mich dieselbe Handarbeit ein zweites Mal
-          gestört hat.
+          Kleine Werkzeuge und Automatisierungen für reale Arbeitsabläufe. Dort, wo
+          wiederkehrende Handarbeit einfacher, schneller oder intelligenter gelöst
+          werden kann.
         </p>
       </article>
 
@@ -394,10 +357,9 @@
         <span class="num">03</span>
         <h2>Lab · Ideenschmiede</h2>
         <p>
-          Die Werkbank: Experimente, kleine Projekte, Lösungen für ein konkretes
-          Problem. Hier kommen die Dinge hin, sobald sie zeigbar sind.
+          Experimente, kleine Projekte und Lösungen für konkrete Probleme. Hier landen
+          die Dinge, die aus einer Idee tatsächlich etwas Nutzbares machen.
         </p>
-        <span class="chip">In Vorbereitung</span>
       </article>
     </div>
   </section>
@@ -406,8 +368,8 @@
     <section class="werk">
       <span class="label">Beruflich</span>
       <p>
-        EngpassWerk Consulting — Interim-Unterstützung für Supply Chain und Logistik
-        in Engpasssituationen. Das Geschäftliche steht dort, nicht hier.
+        EngpassWerk Consulting · Beratung und Interim-Unterstützung für Supply Chain,
+        Logistik und Engpasssituationen.
       </p>
       <a href="https://www.engpasswerk.de" rel="noopener">engpasswerk.de</a>
     </section>
