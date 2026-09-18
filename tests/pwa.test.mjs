@@ -236,8 +236,19 @@ test('Tippziele und Zoom bleiben iPhone-tauglich', () => {
   // Kein gesperrter Zoom: das ist eine Zugänglichkeitsfrage, keine Stilfrage.
   assert.ok(!/user-scalable=no|maximum-scale=1/.test(html))
 
-  // Die Links in der Fußzeile sind die kleinsten Tippziele der Seite.
+  /*
+   * Jedes Tippziel der Seite mindestens 44px hoch. Das sind genau zwei
+   * Gruppen: die beiden Verweise in den Werk-Blöcken (Lab 01, EngpassWerk)
+   * und die beiden in der Fußzeile. Synthetisch gemessen lagen die
+   * Werk-Verweise bei 28px.
+   */
+  assert.match(html, /\.werk a \{[^}]*min-height:\s*44px/s)
   assert.match(html, /footer a \{[^}]*min-height:\s*44px/s)
+
+  // Gegenprobe: mehr Linkgruppen gibt es nicht. Käme eine dazu, soll dieser
+  // Test auffallen statt still weiterzulaufen.
+  const links = html.match(/<a\s+[^>]*href=/g) || []
+  assert.equal(links.length, 4, `Die Seite hat jetzt ${links.length} Links — Tippziele neu prüfen`)
 })
 
 /* ── Hilfsmittel ──────────────────────────────────────────────────────────── */

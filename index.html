@@ -281,17 +281,30 @@
     color: var(--ink-2);
   }
 
+  /*
+   * 44px Mindesthöhe wie in der Fußzeile — synthetisch gemessen lagen diese
+   * Verweise bei 28px.
+   *
+   * Die Unterstreichung war vorher ein border-bottom. Ein Rahmen sitzt am
+   * unteren Rand der Box; sobald die Box 44px hoch ist, rutscht er vom Text
+   * weg. text-decoration bleibt dagegen am Text, egal wie groß das Tippziel
+   * darum herum ist. Optisch ist es dieselbe Linie.
+   */
   .werk a {
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
     font-size: .95rem;
     color: var(--ink);
-    text-decoration: none;
-    border-bottom: 1px solid var(--line-lift);
-    padding-bottom: 2px;
-    transition: color .25s ease, border-color .25s ease;
+    text-decoration: underline;
+    text-decoration-color: var(--line-lift);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+    transition: color .25s ease, text-decoration-color .25s ease;
   }
 
-  .werk a:hover { color: var(--orange); border-color: var(--orange); }
+  .werk a:hover { color: var(--orange); text-decoration-color: var(--orange); }
 
   /*
    * Stehen zwei Werk-Blöcke untereinander, gehört der große Abstand nur unter
