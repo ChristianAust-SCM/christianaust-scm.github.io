@@ -145,6 +145,26 @@ test('kein Manifest, kein Service Worker — das bleibt Sache des Cockpits', asy
   assert.equal(await exists('sw.js'), false)
 })
 
+test('Lab 01 ist verlinkt, dezent und auf eigenem Grund', () => {
+  const lab = html.match(/<section class="werk">\s*<span class="label">Lab 01<\/span>[\s\S]*?<\/section>/)
+  assert.ok(lab, 'Der Lab-01-Block fehlt')
+
+  const markup = lab[0]
+  assert.match(markup, /LDM Planer/)
+  assert.match(markup, /href="https:\/\/christianaust\.eu\/ldm-planer\/"/)
+
+  // Genau einmal, und vor dem beruflichen Block
+  assert.equal((html.match(/>Lab 01</g) || []).length, 1)
+  assert.ok(html.indexOf('>Lab 01<') < html.indexOf('>Beruflich<'), 'Lab 01 steht nach dem beruflichen Block')
+
+  // Eigener Grund: kein fremder Host, kein neues Fenster, kein Skript
+  assert.ok(!/target="_blank"/.test(markup))
+  assert.ok(!/<script/i.test(markup))
+
+  // Der Bereich „Lab · Ideenschmiede" oben bleibt unangetastet
+  assert.match(html, /<h2>Lab · Ideenschmiede<\/h2>/)
+})
+
 test('das Deployment-Ziel der Domain bleibt unangetastet', async () => {
   const cname = (await readFile(new URL('CNAME', root), 'utf8')).trim()
   assert.equal(cname, 'christianaust.eu')
