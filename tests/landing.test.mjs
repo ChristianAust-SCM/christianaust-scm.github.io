@@ -114,14 +114,24 @@ test('alle referenzierten Dateien liegen auch im Repo', async () => {
   }
 })
 
-test('Metadaten, Favicons und Vorschaubild sind gesetzt', () => {
+test('Metadaten, Favicons und Vorschaubild sind gesetzt', async () => {
   assert.match(html, /<html lang="de">/)
   assert.match(html, /<link rel="canonical" href="https:\/\/christianaust\.eu\/">/)
   assert.match(html, /<meta name="robots" content="index, follow">/)
   assert.match(html, /<meta name="description" content="[^"]{80,}">/)
   assert.match(html, /<meta property="og:image" content="https:\/\/christianaust\.eu\/assets\/logo\/ca-favicon-512\.png">/)
-  assert.match(html, /<link rel="apple-touch-icon" sizes="180x180" href="assets\/logo\/ca-favicon-180\.png">/)
   assert.match(html, /<meta name="theme-color" content="#0B1622">/)
+
+  /*
+   * Das Apple-Touch-Icon liegt seit der PWA-Fassung unter assets/pwa/ und ist
+   * dort deckend; die frühere Datei assets/logo/ca-favicon-180.png hatte
+   * durchsichtige Ecken, die iOS auf Schwarz legt. Die alte Datei bleibt im
+   * Repo, weil bereits angelegte Home-Bildschirm-Symbole auf sie zeigen.
+   * Alles Weitere zur Installation steht in tests/pwa.test.mjs.
+   */
+  assert.match(html, /<link rel="apple-touch-icon" sizes="180x180" href="assets\/pwa\/apple-touch-icon\.png">/)
+  assert.equal(await exists('assets/logo/ca-favicon-180.png'), true,
+    'Der alte Icon-Pfad darf nicht verschwinden — er ist auf Geräten gespeichert')
 })
 
 test('iPhone: Safe-Area und skalierbarer Zoom', () => {
@@ -138,10 +148,25 @@ test('Bewegung ist abschaltbar und das Raster bricht auf eine Spalte um', () => 
   assert.match(html, /grid-template-columns: repeat\(auto-fit, minmax\(258px, 1fr\)\)/)
 })
 
-test('kein Manifest, kein Service Worker — das bleibt Sache des Cockpits', async () => {
-  assert.ok(!/rel="manifest"/.test(html))
+test('ein Manifest ja, ein Service Worker nein', async () => {
+  /*
+   * GEÄNDERTE ENTSCHEIDUNG, September 2026.
+   *
+   * Vorher stand hier: „kein Manifest, kein Service Worker — das bleibt Sache
+   * des Cockpits". Das Manifest ist inzwischen ausdrücklich gewollt: die Seite
+   * soll sich als eigene App „CA" auf dem iPhone ablegen lassen.
+   *
+   * Die zweite Hälfte der alten Zusage gilt unverändert weiter, und zwar aus
+   * einem Grund, der mit dem Cockpit nichts zu tun hat: diese Seite liegt auf
+   * der APEX-Domain. Ein Service Worker hätte von hier aus Reichweite über
+   * alles, was sonst noch unter christianaust.eu hängt — /tt-umfrage/ und
+   * /Tisch7/ kommen aus fremden Repositories. Ein Manifest hat diese
+   * Reichweite nicht; es beschreibt nur, wie der Start aussieht.
+   */
+  assert.match(html, /rel="manifest"/)
+  assert.equal(await exists('manifest.webmanifest'), true)
+
   assert.ok(!/serviceWorker/.test(html))
-  assert.equal(await exists('manifest.webmanifest'), false)
   assert.equal(await exists('sw.js'), false)
 })
 

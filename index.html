@@ -22,7 +22,25 @@
 
 <link rel="icon" type="image/png" sizes="32x32" href="assets/logo/ca-favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="assets/logo/ca-favicon-512.png">
-<link rel="apple-touch-icon" sizes="180x180" href="assets/logo/ca-favicon-180.png">
+
+<!--
+  Installation als App.
+
+  Das Manifest beschreibt nur, wie diese Seite startet, wenn sie vom
+  Home-Bildschirm aus geöffnet wird. Es hat ausdrücklich KEINE Reichweite über
+  die übrigen Pfade dieser Domain (/tt-umfrage/, /Tisch7/) — anders als ein
+  Service Worker, den es hier bewusst nicht gibt. Siehe docs/ARCHITEKTUR.md.
+
+  `apple-touch-icon` zeigt jetzt auf die deckende Fassung unter assets/pwa/.
+  Die alte Datei assets/logo/ca-favicon-180.png bleibt liegen: bereits
+  angelegte Home-Bildschirm-Symbole zeigen weiterhin auf sie.
+-->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CA">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
 
 <style>
   /*
@@ -97,12 +115,24 @@
 
   /* ---------------------------------------------------------------- Hero */
 
+  /*
+   * 100svh, nicht 100dvh: svh ist die KLEINE Viewporthöhe, also die mit
+   * eingeblendeter Safari-Leiste. Der Hero behält damit beim Scrollen seine
+   * Höhe, statt sich beim Ein- und Ausfahren der Leiste neu zu setzen. Im
+   * Standalone-Fenster gibt es keine Leiste — dort sind svh, lvh und dvh
+   * ohnehin derselbe Wert.
+   *
+   * Der obere Innenabstand rechnet die Safe Area mit ein. Im Standalone-Modus
+   * mit `black-translucent` läuft der Inhalt unter die Statusleiste; ohne
+   * diesen Zuschlag stünde das Signet unter der Dynamic Island. Außerhalb von
+   * iOS ist env() null und es ändert sich nichts.
+   */
   .hero {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding-top: clamp(56px, 12vh, 120px);
+    padding-top: calc(clamp(56px, 12vh, 120px) + env(safe-area-inset-top, 0px));
     padding-bottom: clamp(48px, 10vh, 96px);
   }
 
@@ -294,9 +324,15 @@
     background: var(--line);
   }
 
+  /*
+   * 44px Mindesthöhe: die Fußzeilenlinks sind die einzigen Tippziele der
+   * Seite und mit .86rem Schriftgröße sonst rund 23px hoch — deutlich unter
+   * dem, was sich auf einem Telefon zuverlässig treffen lässt.
+   */
   footer a {
     display: inline-flex;
     align-items: center;
+    min-height: 44px;
     gap: 7px;
     color: var(--ink-3);
     text-decoration: none;
@@ -306,6 +342,32 @@
   footer a:hover { color: var(--ink); }
   footer .spacer { flex: 1 1 auto; }
   footer svg { flex: 0 0 auto; opacity: .85; }
+
+  /* ------------------------------------------------------------ Querformat */
+
+  /*
+   * iPhone im Querformat: 844×390 und 932×430.
+   *
+   * Ein Hero mit 100svh Mindesthöhe füllt dort den gesamten Bildschirm, ohne
+   * dass etwas darauf hindeutet, dass darunter noch Inhalt kommt — gemessen
+   * bleiben bei 390px Höhe abzüglich der Innenabstände nur rund 286px für
+   * einen Block, der aufrecht über 400px braucht. Bei geringer Höhe fällt die
+   * Mindesthöhe deshalb weg und der Hero wird nur so hoch wie sein Inhalt.
+   *
+   * Die Bedingung fragt nach der Höhe, nicht nach dem Gerät: ein flaches
+   * Browserfenster am Schreibtisch hat dasselbe Problem.
+   */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .hero {
+      min-height: auto;
+      padding-top: calc(clamp(28px, 9vh, 56px) + env(safe-area-inset-top, 0px));
+      padding-bottom: clamp(28px, 9vh, 56px);
+    }
+
+    .signet { margin-bottom: clamp(14px, 5vh, 28px); }
+
+    .rule { margin-top: clamp(16px, 6vh, 40px); margin-bottom: clamp(14px, 5vh, 32px); }
+  }
 
   /* ---------------------------------------------------------- Bewegungsarm */
 
