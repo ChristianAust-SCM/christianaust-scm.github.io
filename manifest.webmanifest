@@ -1,0 +1,33 @@
+{
+  "name": "Christian Aust",
+  "short_name": "CA",
+  "description": "Persönlicher Raum von Christian Aust für Ideen, kleine Werkzeuge und digitale Lösungen aus der Praxis.",
+  "lang": "de-DE",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#0B1622",
+  "background_color": "#0B1622",
+  "icons": [
+    {
+      "src": "assets/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

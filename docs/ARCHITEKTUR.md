@@ -64,15 +64,87 @@ Grund, warum die Seite bewusst ohne JavaScript auskommt.
 - **Kein JavaScript.** Nichts auf der Seite braucht es.
 - **Keine externen Ressourcen.** Keine Google Fonts, kein CDN, kein Analytics,
   kein Einbettungs-Widget. Jeder Request bleibt auf der eigenen Domain.
-- **Keine PWA, kein Manifest, kein Service Worker.** Das ist Sache des
-  Cockpits; eine öffentliche Landingpage braucht keine Installation. Ein
-  Service Worker auf dem Apex hätte zudem Reichweite über die gesamte Domain
-  inklusive `/tt-umfrage/` — genau das ist nicht gewollt.
+- **Kein Service Worker.** Siehe Abschnitt 3a — der Punkt ist wichtig genug
+  für einen eigenen Abschnitt. (Bis September 2026 stand hier „keine PWA, kein
+  Manifest, kein Service Worker". Das Manifest ist inzwischen da; der Service
+  Worker bleibt weg, und zwar aus einem eigenen Grund.)
 - **Kein Formular, keine Datenerhebung.** Damit stellt sich die Frage nach
   Einwilligung und Speicherung erst gar nicht.
 - **Kein Cockpit-Inhalt.** Der Fußzeilen-Link führt auf
   `cockpit.christianaust.eu` und trägt `rel="nofollow"`. Was dort liegt,
   entscheidet Cloudflare Access — die Seite hier weiß nichts darüber.
+
+---
+
+## 3a · Installation als App — und warum ohne Service Worker
+
+Seit September 2026 lässt sich die Seite auf dem iPhone als eigene App „CA"
+ablegen. Dafür liegen im Repo `manifest.webmanifest` und vier deckende Symbole
+unter `assets/pwa/`. Mehr ist es nicht.
+
+### Was ein Manifest tut — und was nicht
+
+| | Manifest | Service Worker |
+|---|---|---|
+| Wirkung | beschreibt Name, Symbol, Startadresse und Fensterart | fängt **jeden** Request im Scope ab und beantwortet ihn notfalls aus einem eigenen Cache |
+| Reichweite auf dem Apex | nur der Start; `scope` beeinflusst, welche Navigationen im App-Fenster bleiben | die gesamte Domain unterhalb seines Pfads |
+| Bleibt nach Deinstallation | nichts | registriert, bis er ausdrücklich abgemeldet wird |
+
+Das ist der ganze Unterschied und zugleich die ganze Entscheidung.
+
+### Die vier Fragen, gegen die geprüft wurde
+
+1. **Sind die Inhalte öffentlich?** Ja, restlos. Die Seite trägt
+   `robots: index, follow` und enthält nichts, was nicht jeder sehen dürfte.
+   Ein Cache brächte hier also kein Vertraulichkeitsproblem — anders als beim
+   Cockpit, wo es genau darum ging.
+2. **Gibt es sensible Inhalte?** Nein. Kein Formular, keine Anmeldung, keine
+   Datenerhebung.
+3. **Hätte Offline-Nutzung echten Mehrwert?** Nein. Die Seite ist eine
+   Visitenkarte mit vier Verweisen nach draußen. Offline wären genau diese
+   Verweise tot — der einzige Grund, sie zu öffnen, fiele weg.
+4. **Wie hoch ist das Risiko veralteter Inhalte?** Spürbar. Die Seite ist eine
+   einzige Datei; ein Cache-First-Service-Worker würde exakt den einen
+   Inhalt festhalten, der sich ändert.
+
+**Der Ausschlag gibt aber Punkt 5, der in keiner Standardliste steht:** diese
+Seite liegt auf der **Apex-Domain**. Ein Service Worker, der von `/` aus
+registriert wird, hat Reichweite über alles, was unter `christianaust.eu`
+hängt — auch über `/tt-umfrage/` und `/Tisch7/`, die aus **fremden
+Repositories** kommen und von diesem Repo weder ausgeliefert noch gepflegt
+werden. Ein Fehler hier legte Projekte lahm, die mit dieser Seite nichts zu
+tun haben, und ein einmal registrierter Worker verschwindet nicht dadurch,
+dass man die Datei löscht.
+
+> **Entscheidung: bewusst kein Service Worker.** Nicht als Aufschub, sondern
+> als Ergebnis. Er bringt hier nichts und riskiert etwas.
+
+Sollte die Frage später doch aufkommen — etwa für eine echte Offline-Anwendung
+unter `tools.` oder `lab.` —, gehört sie **auf eine Subdomain**, nicht auf den
+Apex. Dort ist die Reichweite von Natur aus begrenzt. Das ist auch der Grund,
+warum in Abschnitt 4 für alle Ausbaustufen Cloudflare Pages empfohlen wird.
+
+### Was die App-Fassung bewusst NICHT tut
+
+- **Keine Gestaltungsänderung.** Das Layout, die Farben, die Typografie und
+  die Inhalte sind unverändert. Geändert wurden ausschließlich mobile Risiken:
+  Safe Area im Hero, die Mindesthöhe des Hero im Querformat und die Höhe der
+  vier Tippziele.
+- **Kein JavaScript.** Auch nicht für die Installation — die läuft
+  vollständig über `<link rel="manifest">` und die Apple-Meta-Angaben.
+- **Keine Splash-Screen-Matrix.** Apple-Launch-Images gäbe es in einem Dutzend
+  gerätespezifischer Größen, die bei jedem neuen iPhone nachzupflegen wären.
+  Ohne sie zeigt iOS den `background_color` — hier derselbe Ton wie der Grund
+  der Seite, also ein ruhiger Start statt eines weißen Blitzes.
+- **Keine Benachrichtigungen, kein Web Push.** Die Seite hat nichts zu melden.
+
+### Nachgemessen
+
+`manifest.webmanifest` wird von GitHub Pages als
+`application/manifest+json` ausgeliefert. Nicht angenommen, sondern an einem
+real dort gehosteten Beispiel geprüft:
+`mdn.github.io/pwa-examples/a2hs/manifest.webmanifest` antwortet mit HTTP 200
+und genau diesem Content-Type, `server: GitHub.com`.
 
 ---
 
