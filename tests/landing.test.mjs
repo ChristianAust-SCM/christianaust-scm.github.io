@@ -1,6 +1,6 @@
 /*
  * Prüft die Landingpage gegen die Zusagen, die sie macht.
- * Ausführen: node --test tests/
+ * Ausführen: node --test tests/*.test.mjs
  */
 
 import assert from 'node:assert/strict'
