@@ -28,19 +28,48 @@ Schriften, keine Skripte, keine Tracker.
 
 ```
 index.html              Die gesamte Landingpage: Markup + Styles inline
+manifest.webmanifest    Installation als App „CA" auf dem Home-Bildschirm
 assets/logo/            CA-Signet und Favicons (aus dem Cockpit-Branding übernommen)
   ca-signet-dark.png    C orange, A hell, transparent — steht direkt auf dunklem Grund
   ca-favicon-32.png     Browser-Tab
-  ca-favicon-180.png    Apple-Touch-Icon
-  ca-favicon-512.png    große Kachel, zugleich OG-Bild
-tests/landing.test.mjs  Prüft die Seite gegen die Vorgaben dieses Auftrags
-docs/ARCHITEKTUR.md     Domain- und Hostinglandschaft, geplante Ausbaustufen
+  ca-favicon-180.png    früheres Apple-Touch-Icon; bleibt liegen, weil bereits
+                        angelegte Home-Bildschirm-Symbole auf diesen Pfad zeigen
+  ca-favicon-512.png    große Kachel, OG-Bild und Quelle der PWA-Symbole
+assets/pwa/             Installationssymbole, deckend, aus ca-favicon-512.png erzeugt
+  icon-192.png          192x192
+  icon-512.png          512x512
+  icon-maskable-512.png 512x512, Zeichen innerhalb der Maskable-Sicherheitszone
+  apple-touch-icon.png  180x180, deckend
+tools/make-pwa-icons.mjs  erzeugt assets/pwa/ neu; ohne Abhaengigkeiten
+tests/landing.test.mjs  Prueft die Seite gegen die Vorgaben dieses Auftrags
+tests/pwa.test.mjs      Prueft Manifest, Symbole und die iPhone-Risiken
+docs/ARCHITEKTUR.md     Domain- und Hostinglandschaft, PWA- und SW-Entscheidung
 CNAME                   christianaust.eu — von GitHub Pages ausgewertet
 ```
 
 Da alles inline liegt, lädt die Seite in einem einzigen Request (plus Signet
 und Favicon). Ein Doppelklick auf `index.html` funktioniert genauso wie die
-ausgelieferte Fassung.
+ausgelieferte Fassung — `start_url` und `scope` im Manifest stehen relativ,
+damit auch das so bleibt.
+
+### Als App auf dem iPhone
+
+In Safari `https://christianaust.eu/` öffnen → Teilen → **„Zum Home-Bildschirm"**
+→ Name `CA` bestätigen. Die Seite startet danach ohne Adressleiste, in den
+Farben der Seite und mit eigenem Eintrag im App-Umschalter.
+
+**Bewusst ohne Service Worker.** Diese Seite liegt auf der Apex-Domain; ein
+Service Worker hätte von hier aus Reichweite über `/tt-umfrage/` und
+`/Tisch7/` aus fremden Repositories. Offline bringt eine Visitenkarte mit vier
+Verweisen nach draußen ohnehin nichts. Die ausführliche Begründung steht in
+`docs/ARCHITEKTUR.md`, Abschnitt 3a.
+
+### Symbole neu erzeugen
+
+```bash
+node tools/make-pwa-icons.mjs          # schreibt assets/pwa/
+node tools/make-pwa-icons.mjs --check  # vergleicht sie mit der Quelle
+```
 
 ### Lokal ansehen
 
@@ -59,6 +88,12 @@ Die Tests lesen `index.html` als Text und prüfen die Zusagen, die diese Seite
 machen muss: keine CV-Rückstände, keine externen Abhängigkeiten, Cockpit nur
 dezent und `nofollow`, EngpassWerk-Verweis auf die tatsächlich erreichbare
 `www`-Adresse, Favicons und OG-Bild vorhanden, Safe-Area für iPhone gesetzt.
+
+`tests/pwa.test.mjs` kommt dazu: Manifestfelder, die drei Symbolgrößen, dass
+die Symboldateien echte deckende PNG in der angegebenen Größe sind, dass sie
+sich Byte für Byte aus dem CA-Signet reproduzieren lassen, dass das maskable
+Symbol seine Sicherheitszone einhält — und dass weiterhin kein Service Worker
+im Repo liegt.
 
 ---
 
