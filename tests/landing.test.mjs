@@ -100,7 +100,7 @@ test('die Seite lädt nichts von fremden Servern und führt kein Skript aus', ()
   // Jedes src/href auf eine Ressource zeigt auf die eigene Domain
   const refs = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map(m => m[1])
   const fremd = refs.filter(r => /^https?:\/\//.test(r) && !r.startsWith('https://christianaust.eu'))
-  const erlaubt = ['https://www.engpasswerk.de', 'https://www.linkedin.com/in/austchristian', 'https://cockpit.christianaust.eu']
+  const erlaubt = ['https://www.engpasswerk.de', 'https://www.linkedin.com/in/austchristian', 'https://cockpit.christianaust.eu', 'https://ldm.christianaust.eu']
   for (const url of fremd) {
     assert.ok(erlaubt.includes(url), `Unerwarteter externer Verweis: ${url}`)
   }
@@ -151,7 +151,7 @@ test('Lab 01 ist verlinkt, dezent und auf eigenem Grund', () => {
 
   const markup = lab[0]
   assert.match(markup, /LDM Planer/)
-  assert.match(markup, /href="https:\/\/christianaust\.eu\/ldm-planer\/"/)
+  assert.match(markup, /href="https:\/\/ldm\.christianaust\.eu"/)
 
   // Genau einmal, und vor dem beruflichen Block
   assert.equal((html.match(/>Lab 01</g) || []).length, 1)
